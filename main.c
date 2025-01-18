@@ -6,7 +6,7 @@
 /*   By: farah <farah@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 11:11:05 by falhaimo          #+#    #+#             */
-/*   Updated: 2025/01/08 20:41:02 by farah            ###   ########.fr       */
+/*   Updated: 2025/01/17 13:15:24 by farah            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,35 @@ void	init_data(t_data *data)
 		pthread_mutex_init(&data->forks[i], NULL);
 		pthread_mutex_init(&data->meal_mutexes[i], NULL);
 		i++;
-	}  
+	}
+}
+
+void *monitor_routine(void *arg)
+{
+    t_data *data = (t_data *)arg;
+    int i;
+
+    while (1)
+    {
+        i = 0;
+        while (i < data->num_philo)
+        {
+            pthread_mutex_lock(&data->meal_mutexes[i]);
+            if ((get_time() - data->philos[i].last_meal_time) > data->time_to_die)
+            {
+                printf("%ld %d died\n", get_time(), data->philos[i].id);
+                pthread_mutex_unlock(&data->meal_mutexes[i]);
+                pthread_mutex_lock(&data->stop_mutex);
+                data->stop = 1;
+                pthread_mutex_unlock(&data->stop_mutex);
+                return (NULL);
+            }
+            pthread_mutex_unlock(&data->meal_mutexes[i]);
+            i++;
+        }
+        usleep(1000); // Check every millisecond
+    }
+    return (NULL);
 }
 
 void	*routine(void *arg)
@@ -101,7 +129,6 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	data = philo->data;
 	philo->last_meal_time = get_time();
-	printf("Philo %d initial last meal time: %ld\n", philo->id, philo->last_meal_time);
 	while (1)
 	{
 		pthread_mutex_lock(&data->stop_mutex);
@@ -111,10 +138,20 @@ void	*routine(void *arg)
 			return (NULL);
 		}
 		pthread_mutex_unlock(&data->stop_mutex);
+	if (philo->id % 2 == 0)
+	{
 		pthread_mutex_lock(&data->forks[philo->id - 1]);
 		printf("%ld %d has taken first fork\n", get_time(), philo->id);
 		pthread_mutex_lock(&data->forks[philo->id % data->num_philo]);
 		printf("%ld %d has taken second fork\n", get_time(), philo->id);
+	}
+	else
+	{
+	pthread_mutex_lock(&data->forks[philo->id % data->num_philo]);
+	printf("%ld %d has taken first fork\n", get_time(), philo->id);
+	pthread_mutex_lock(&data->forks[philo->id - 1]);
+	printf("%ld %d has taken second fork\n", get_time(), philo->id);
+	}
 		printf("%ld %d is eating\n", get_time(), philo->id);
 		pthread_mutex_lock(&data->meal_mutexes[philo->id - 1]);
 		philo->last_meal_time = get_time();
@@ -128,6 +165,7 @@ void	*routine(void *arg)
 	}
 	return (NULL);
 }
+
 void	*monitor(void *arg)
 {
 	int		i;
@@ -145,9 +183,11 @@ void	*monitor(void *arg)
 			pthread_mutex_lock(&data->stop_mutex);
 			if (data->stop)
 			{
-				pthread_mutex_unlock(&data->stop_mutex);	
+				pthread_mutex_unlock(&data->stop_mutex);
+				pthread_mutex_unlock(&data->forks[data->philos->id - 1]);
 				return (NULL);
 			}
+			pthread_mutex_unlock(&data->stop_mutex);
 			pthread_mutex_lock(&data->meal_mutexes[i]);
 			if (cur_time - data->philos[i].last_meal_time > data->time_to_die)
 			{
@@ -188,18 +228,18 @@ void	create_thraeds(t_data *data)
 
 void	free_data(t_data *data)
 {
-	int	i;
+	//int	i;
 
 	free(data->forks);
 	free(data->philos);
 	free(data->meal_mutexes);
-	i = 0;
-	while (i < data->num_philo)
-	{
-		pthread_mutex_destroy(&data->forks[i]);
-		pthread_mutex_destroy(&data->meal_mutexes[i]);
-		i++;
-	}
+	// i = 0;
+	// while (i < data->num_philo)
+	// {
+	//  	pthread_mutex_destroy(&data->forks[i]);
+	//  	pthread_mutex_destroy(&data->meal_mutexes[i]);
+	// 	i++;
+	// }
 	pthread_mutex_destroy(&data->stop_mutex);
 }
 
@@ -207,6 +247,7 @@ int	main(int argc, char **argv)
 {
 	t_data	data;
 	pthread_t monitor_thread;
+	
 	if (parse_args(argc, argv, &data) != 0)
 	{
 		printf("Invalid arguments\n");
