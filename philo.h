@@ -20,29 +20,28 @@
 # include <stdlib.h>
 # include <stddef.h>
 
-typedef struct s_philo
-{
-	int	id;
-	int	meals_eaten;
-	long	last_meal_time;
-	pthread_t		thread;
-	struct s_data		*data;
-}	t_philo;
+typedef struct s_philo {
+    int id;
+    long last_meal_time;
+    int meals_eaten;
+    pthread_t thread;
+    struct s_data *data;
+} t_philo;
 
-typedef struct s_data
-{
-	int	num_philo;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	num_meals;
-	int	stop;
-	long	start_time;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	stop_mutex;
-	pthread_mutex_t	*meal_mutexes;
-	t_philo	*philos; 
-}	t_data;
+typedef struct s_data {
+    int num_philo;
+    long time_to_die;
+    long time_to_eat;    
+    long time_to_sleep;
+    int num_meals;
+    int stop;
+    int meals_finished;
+    pthread_mutex_t stop_mutex;
+    pthread_mutex_t meals_mutex;
+    pthread_mutex_t *forks;
+    pthread_mutex_t print_mutex;
+    t_philo *philos;
+} t_data;
 
 int		ft_atoi(char *nptr);
 long		get_time();
