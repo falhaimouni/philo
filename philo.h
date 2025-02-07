@@ -6,7 +6,7 @@
 /*   By: farah <farah@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:30:24 by falhaimo          #+#    #+#             */
-/*   Updated: 2025/01/08 19:03:12 by farah            ###   ########.fr       */
+/*   Updated: 2025/02/07 21:36:49 by farah            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PHILO_H
 
 # include <stdio.h>
+# include <string.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/time.h>
