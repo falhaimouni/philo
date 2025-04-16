@@ -1,0 +1,98 @@
+the execution thread is a logical sequence of instructions inside a process that automatically managed by the os keranl. we can create a several threads in our program .
+Each one of a process's thread has its own contex:id, stack, instructions pointer. but they are all part of the same process , shere the same memory and varibales the fds ...
+any thread can read and write to the same virtual memory , which makes communication between threads easier than communication between processes .
+
+the shared memory and the ease with which a thread can access another thread's memory clearly also has its share of danger it can cuase a nasty synchronization errors (DATA RACES)
+and data races happens when both threads often access the same memory area at the same time.
+DATA RACE: it happens when a program is subject to the progression or timing of other uncontrollable events. It is impossible to predict if the operating system will choose the correct sequencing for our threads
+
+So is there a way to stop a thread from reading a value while another one modifies it? Yes, thanks to mutexes!
+
+Mutex : (mutual exclusion) is a synchronization primitive it is essentially a lock that allows us to regualte access to data and prevent shared resources being used at the same time.
+
+if the mutex is unlocked (pthread_mutex_lock) locks it and the calling thread becomes its owner . in this case the function ends immeddiatly . 
+if the mutex is already locked by another thread (pthread_mutex_lock) suspends the execution of the calling thread until the mutex is unlocked.
+
+the (pthread_mutex_unlock) unlock a mutex . the mutex to be unlocked is assumed to be locked by the calling thread . and the function only sets it to unlocked .
+
+mutexes can often provoke deadlocks . its a situation in which ecah thread for a resource held by another thread .in this situation the program stays perpetually pending and must be killed .
+and it also happen when a thread is waiting for a mutex that it alraedy owns.
+.................................................
+int pthread_create(pthread_t *restrict thread,
+                          const pthread_attr_t *restrict attr,
+                          void *(*start_routine)(void *),
+                          void *restrict arg);
+
+USAGE:
+function starts a new thraed in the calling process. 
+
+ARGUMENTS:
+              
+thraed : pointer (pthread_t) to store the ID of the thread we will be creating.
+
+attr: allow us to change the attributes of the new thraed . if its (NULL) the thraed that will be created will be in default attributes.
+
+start_routine: the function where the thread will start its execution it must be prototyped (void *function_name(void *arg);) .
+
+arg: a pointer towards an argument to pass to the thread's start_routione function .
+
+RETURN VALUE:
+thread varibale will contaion the thraed's ID , but the function is self return 0 in sucsses and error code if not.
+..................................................
+ int pthread_join(pthread_t thread, void **retval);
+
+USAGE:
+block the execution of a thread until another thread finishes . it waits for the thraed to terminate .
+Let’s note that we can only wait for the termination of a specific thread.
+There is no way to wait for the first terminated thread without specifying an ID, as the wait function for child processes does.
+
+ARGUMENTS:
+thraed: the ID of the thread that this thread should wait for . The specified thraed must be joinable.
+
+retval: a pointer towards a variable that can contain the return value of the thraed's routine function .the default is (NULL).
+
+RETURN VALUE:
+returns 0 for sucsses or an error code for failure.
+..................................................
+int pthread_detach(pthread_t thread);
+
+USAGE:
+But in some cases, it is possible and preferable to not wait for the end of certain theads at all. In that case, we can detach the thread to tell the operating system that it can reclaim its resources right away when it finishes its execution. For that, we use the pthread_detach function (usually right after that thread’s creation):
+Here, all we have to supply if the thread’s ID. We get 0 in return if the operation was a success, or non-zero if there was an error. After detaching the thread, other threads will not be able to kill or wait for this thread with pthread_join.
+..................................................
+int pthread_mutex_init(pthread_mutex_t *mutex,
+                        const pthread_mutexattr_t *mutexattr);
+
+
+USAGE:
+destroy and initialize a mutex.
+
+ARGUMENTS:
+mutex: a pointer to a varibale of (pthread_mutex_t) type the mutex we want to initilize.
+
+mutexattr: a pointer to a specific attributes for the mutex . (NULL) is the default attr.
+
+RETURN VALUE:
+this function only returns 0.
+..................................................
+int pthread_mutex_lock(pthread_mutex_t *mutex));
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
+
+USAGE:
+to lock and unlock the mutex.
+
+RETURN VALUE:
+returns 0 for sucsses or an error code for failure.
+..................................................
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+
+USAGE:
+this function destroys an unlock mutex , freeing whatever resources it might hold.
+
+
+
+
+
+
+
+

@@ -6,7 +6,7 @@
 /*   By: falhaimo <falhaimo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 09:52:12 by falhaimo          #+#    #+#             */
-/*   Updated: 2025/04/14 09:05:45 by falhaimo         ###   ########.fr       */
+/*   Updated: 2025/04/15 16:14:42 by falhaimo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,10 +213,24 @@ int	ft_atoi(char *nptr)
 	return (res * neg);
 }
 
+int	check_valid(t_data *data)
+{
+	if (data->num_philos < 1 || data->time_to_die <= 0
+		|| data->time_to_eat <= 0 || data->time_to_sleep <= 0
+		|| (data->meals_required < -1))
+		return (1);
+	return (0);
+}
+
 int	parse_args(int argc, char **argv, t_data *data)
 {
 	if (argc != 5 && argc != 6)
 		return (1);
+	if (argc == 6)
+	{
+		if (ft_atoi(argv[5]) <= 0)
+			return (1);
+	}
 	data->num_philos = ft_atoi(argv[1]);
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
@@ -225,6 +239,8 @@ int	parse_args(int argc, char **argv, t_data *data)
 		data->meals_required = ft_atoi(argv[5]);
 	else
 		data->meals_required = -1;
+	if (check_valid(data) != 0)
+		return (1);
 	data->stop_simulation = 0;
 	data->start_time = get_time_in_ms();
 	return (0);
@@ -298,7 +314,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i < data.num_philos)
 	{
-		if (pthread_create(&data.philos[i].thread, NULL, philosopher_routine, &data.philos[i]) != 0)
+		if (pthread_create(&data.philos[i].t_id, NULL, philosopher_routine, &data.philos[i]) != 0)
 		{
 			set_stop_simulation(&data, 1);
 			break ;
@@ -310,7 +326,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i < data.num_philos)
 	{
-		pthread_join(data.philos[i].thread, NULL);
+		pthread_join(data.philos[i].t_id, NULL);
 		i++;
 	}
 	pthread_join(monitor, NULL);

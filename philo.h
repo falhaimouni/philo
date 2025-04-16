@@ -6,7 +6,7 @@
 /*   By: falhaimo <falhaimo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:30:24 by falhaimo          #+#    #+#             */
-/*   Updated: 2025/04/14 09:00:30 by falhaimo         ###   ########.fr       */
+/*   Updated: 2025/04/15 16:13:47 by falhaimo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,13 @@ typedef struct s_philo
 	int				id;
 	int				meals_eaten;
 	t_data			*data;
-	pthread_t		thread;
+	pthread_t		t_id;
 	pthread_mutex_t	mutex;
 }	t_philo;
 
 struct s_data
 {
+	int				flag;
 	int				num_philos;
 	long			time_to_die;
 	long			time_to_eat;
