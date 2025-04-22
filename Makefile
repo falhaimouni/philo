@@ -1,7 +1,7 @@
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -pthread
+CFLAGS = -Wall -Werror -Wextra
 NAME = philo
-SRCS = main.c time.c valid.c
+SRCS = main.c time.c valid.c routine.c routine_utils.c init.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

@@ -6,7 +6,7 @@
 /*   By: falhaimo <falhaimo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:29:24 by falhaimo          #+#    #+#             */
-/*   Updated: 2025/04/19 16:30:26 by falhaimo         ###   ########.fr       */
+/*   Updated: 2025/04/21 14:48:28 by falhaimo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	check_valid(t_data *data)
 {
 	if (data->num_philos < 1 || data->time_to_die <= 0
 		|| data->time_to_eat <= 0 || data->time_to_sleep <= 0
-		|| (data->meals_required < -1))
+		|| (data->meals < -1))
 		return (1);
 	return (0);
 }
@@ -60,9 +60,9 @@ int	parse_args(int argc, char **argv, t_data *data)
 	data->time_to_eat = ft_atoi(argv[3]);
 	data->time_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
-		data->meals_required = ft_atoi(argv[5]);
+		data->meals = ft_atoi(argv[5]);
 	else
-		data->meals_required = -1;
+		data->meals = -1;
 	if (check_valid(data) != 0)
 		return (1);
 	data->stop_simulation = 0;
