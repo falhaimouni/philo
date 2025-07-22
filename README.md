@@ -42,3 +42,12 @@ It emphasizes thread lifecycle management, mutex synchronization, and timing pre
 git clone https://github.com/falhaimouni/philo.git
 cd philo
 make
+---
+
+### 🧪 Usage
+
+Run the program with the following syntax:
+
+```bash
+./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
+
