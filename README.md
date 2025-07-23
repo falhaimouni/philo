@@ -42,8 +42,8 @@ It emphasizes thread lifecycle management, mutex synchronization, and timing pre
 git clone https://github.com/falhaimouni/philo.git
 cd philo
 make
----
 ```
+---
 ### 🧪 Usage
 
 Run the program with the following syntax:
